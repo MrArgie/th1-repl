@@ -1080,11 +1080,18 @@ int Th_CallSubCommand(
       }
     }
   }
-  if(argc<2){
-    Th_ErrorMessage(interp, "Expected sub-command for", argv[0], argl[0]);
-  }else{
-    Th_ErrorMessage(interp, "Expected sub-command, got:", argv[1], argl[1]);
+
+  char *zList = 0;
+  int nList = 0;
+
+  for(int i=0; aSub[i].zName; i++)
+  {
+    Th_StringAppend(interp, &zList, &nList, aSub[i].zName, -1);
+    Th_StringAppend(interp, &zList, &nList, " ", 1);
   }
+
+  Th_ErrorMessage(interp, "Expected a sub-command:", zList, nList);
+  Th_Free(interp, zList);
   return TH_ERROR;
 }
 
