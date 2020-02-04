@@ -13,6 +13,8 @@
 #include "th.h"
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <ctype.h>
 
 int Th_WrongNumArgs(Th_Interp *interp, const char *zMsg){
   Th_ErrorMessage(interp, "wrong # args: should be \"", zMsg, -1);
@@ -125,6 +127,49 @@ static int eval_loopbody(Th_Interp *interp, const char *zBody, int nBody){
     rc = TH_OK;
   }
   return rc;
+}
+
+/*
+** TH Syntax:
+**
+**   puts string ...
+*/
+static int puts_command(Th_Interp *interp, void *ctx, int argc, const char **argv, int *argl)
+{
+  int rc;
+  int iCond;
+
+  char **azElem;
+  int *anElem;
+  int nCount;
+
+  if( argc<2 )
+  {
+    return Th_WrongNumArgs(interp, "puts string ...");
+  }
+
+  for(int i=1; i<argc;i++)
+  {
+    for(int j=0; j<argl[i]; j++)
+    {
+      char c = argv[i][j];
+      if(isprint(c))
+      {
+        putchar(c);
+      }
+      else
+      {
+        printf("\\x%02x", c);
+      }
+    }
+
+    printf(" ");
+  }
+  
+  printf("\n");
+  Th_SetResult(interp, "", -1);
+
+  return TH_OK;
 }
 
 /*
@@ -1406,6 +1451,7 @@ int th_register_language(Th_Interp *interp){
     {"unset",    unset_command,   0},
     {"uplevel",  uplevel_command, 0},
     {"upvar",    upvar_command,   0},
+    {"puts",     puts_command,    0},
 
     {"breakpoint", breakpoint_command, 0},
 
