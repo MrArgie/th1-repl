@@ -165,6 +165,44 @@ static int for_command(
 /*
 ** TH Syntax:
 **
+**   foreach item list script
+*/
+static int foreach_command(Th_Interp *interp, void *ctx, int argc, const char **argv, int *argl)
+{
+  int rc;
+  int iCond;
+
+  char **azElem;
+  int *anElem;
+  int nCount;
+
+  if( argc!=4 ){
+    return Th_WrongNumArgs(interp, "foreach item list script");
+  }
+
+  rc = Th_SplitList(interp, argv[2], argl[2], &azElem, &anElem, &nCount);
+
+  for(int i=0; rc == TH_OK && i<nCount;i++)
+  {
+    rc = Th_SetVar(interp, argv[1], argl[1], azElem[i], anElem[i]);
+
+    if(rc == TH_OK)
+    {
+      rc = Th_Eval(interp, 0, argv[3], argl[3]);
+    }
+  }
+  
+  // Last result falls through to the caller
+  
+  Th_Free(interp, azElem);
+
+  if( rc==TH_BREAK ) rc = TH_OK;
+  return rc;
+}
+
+/*
+** TH Syntax:
+**
 **   lmap item list script
 */
 static int lmap_command(
@@ -1353,6 +1391,7 @@ int th_register_language(Th_Interp *interp){
     {"catch",    catch_command,   0},
     {"expr",     expr_command,    0},
     {"for",      for_command,     0},
+    {"foreach",  foreach_command, 0},
     {"if",       if_command,      0},
     {"info",     info_command,    0},
     {"lindex",   lindex_command,  0},
