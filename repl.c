@@ -11,7 +11,7 @@ int main( int argc, char const * const * argv )
     Th_Vtab vtab = {.xMalloc = malloc, .xFree = free};
     Th_Interp * interp = Th_CreateInterp( &vtab );
     th_register_language( interp );
-
+    linenoiseHistoryLoad("history");
     while(1)
     {
         line = linenoise("> ");
@@ -23,6 +23,7 @@ int main( int argc, char const * const * argv )
         free(line);
     }
 
+    linenoiseHistorySave("history");
     Th_DeleteInterp( interp );
     return rc;
 }
