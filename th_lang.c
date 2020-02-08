@@ -285,7 +285,7 @@ static int lmap_command(
     if(rc == TH_OK)
     {
       int size;
-      char* result = Th_GetResult(interp, &size);
+      const char* result = Th_GetResult(interp, &size);
       Th_ListAppend(interp, &zList, &nList, result, size);
     }
   }
@@ -327,6 +327,95 @@ static int list_command(
   Th_Free(interp, zList);
 
   return TH_OK;
+}
+
+/*
+** TH Syntax:
+**
+**   lappend varname value 
+*/
+static int lappend_command(Th_Interp *interp, void *ctx, int argc, const char **argv, int *argl)
+{
+  if( argc!=3 )
+  {
+    return Th_WrongNumArgs(interp, "lappend varname value");
+  }
+
+  if(TH_OK!=Th_GetVar(interp, argv[1], argl[1]))
+  {
+    return TH_ERROR;
+  }
+
+  char *zList = 0;
+  int nList = 0;
+  zList = Th_TakeResult(interp, &nList);
+  Th_ListAppend(interp, &zList, &nList, argv[2], argl[2]);
+  int rc = Th_SetVar(interp, argv[1], argl[1], zList, nList);
+
+  if(rc==TH_OK)
+  {
+    Th_SetResult(interp, zList, nList);
+  }
+
+  Th_Free(interp, zList);
+  return rc;
+}
+
+/*
+** TH Syntax:
+**
+**   lrange list first last 
+*/
+static int lrange_command(Th_Interp *interp, void *ctx, int argc, const char **argv, int *argl)
+{
+  if( argc!=4 )
+  {
+    return Th_WrongNumArgs(interp, "lrange list first last");
+  }
+
+  int first, last;
+  char **azElem;
+  int *anElem;
+  int nCount;
+
+  if( TH_OK!=Th_ToInt(interp, argv[2], argl[2], &first) )
+  {
+    return TH_ERROR;
+  }
+
+  if( TH_OK!=Th_ToInt(interp, argv[3], argl[3], &last) )
+  {
+    return TH_ERROR;
+  }
+
+  int rc = Th_SplitList(interp, argv[1], argl[1], &azElem, &anElem, &nCount);
+
+  if(rc == TH_OK)
+  {
+    if(first <= last && last < nCount)
+    {
+      char *zList = 0;
+      int nList = 0;
+
+      for(int i = first; i <= last; i++)
+      {
+        Th_ListAppend(interp, &zList, &nList, azElem[i], anElem[i]);
+      }
+
+      Th_SetResult(interp, zList, nList);
+      Th_Free(interp, zList);
+    }
+    else
+    {
+      Th_SetResult(interp, "Index out of bounds", -1);
+      rc = TH_ERROR;
+    }
+    
+  }
+
+  Th_Free(interp, azElem);
+
+  return rc;
 }
 
 /*
@@ -1443,6 +1532,8 @@ int th_register_language(Th_Interp *interp){
     {"list",     list_command,    0},
     {"llength",  llength_command, 0},
     {"lsearch",  lsearch_command, 0},
+    {"lappend",  lappend_command, 0},
+    {"lrange",   lrange_command,  0},
     {"lmap",     lmap_command,    0},
     {"proc",     proc_command,    0},
     {"rename",   rename_command,  0},

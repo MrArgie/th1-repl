@@ -6,37 +6,39 @@ Mostly based on [TH1](https://www.fossil-scm.org/index.html/doc/trunk/www/th1.md
 
 Procedures:
 - `array`
-    - `array exists VARNAME`
-    - `array names VARNAME`
+    - `exists VARNAME`
+    - `names VARNAME`
 - `catch SCRIPT ?VARNAME?`
 - `expr EXPR`
 - `for INIT CONDITION INCR SCRIPT`
 - `foreach VARNAME LIST BODY`
-- `if EXPR1 BODY1 ?elseif EXPR2 DOBY2? ? ?else? BODYN?`
+- `if EXPR1 BODY1 ?elseif EXPR2 BODY2? ? ?else? BODYN?`
 - `info`
     - `commands`
     - `args`
     - `exists VARNAME`
 - `lindex LIST INDEX`
+- `lappend VARNAME VALUE`
 - `list ?ARG1 ?ARG2? ...?`
 - `llength LIST`
 - `lsearch LIST STRING`
+- `lrange LIST FIRST LAST`
 - `lmap VARNAME LIST BODY`
 - `proc NAME ARGLIST CODE`
 - `rename OLDCMD NEWCMD`
 - `set VARNAME ?VALUE?`
 - `string`
-    - `string compare STR1 STR2`
-    - `string first NEEDLE HAYSTACK ?STARTINDEX?`
-    - `string index STRING INDEX`
-    - `string is CLASS STRING`
-    - `string last NEEDLE HAYSTACK ?STARTINDEX?`
-    - `string length STRING`
-    - `string range STRING FIRST LAST`
-    - `string repeat STRING COUNT`
-    - `string trim STRING`
-    - `string trimleft STRING`
-    - `string trimright STRING`
+    - `compare STR1 STR2`
+    - `first NEEDLE HAYSTACK ?STARTINDEX?`
+    - `index STRING INDEX`
+    - `is CLASS STRING`
+    - `last NEEDLE HAYSTACK ?STARTINDEX?`
+    - `length STRING`
+    - `range STRING FIRST LAST`
+    - `repeat STRING COUNT`
+    - `trim STRING`
+    - `trimleft STRING`
+    - `trimright STRING`
 - `unset VARNAME`
 - `uplevel ?LEVEL? SCRIPT`
 - `upvar ?FRAME? OTHERVAR MYVAR ?OTHERVAR MYVAR ...?`
@@ -52,29 +54,27 @@ Procedures:
 Some things I'd like to add as time goes by:
 - New procedures (with generally minimal choice when it comes to options):
     - `switch STRING PATTERN BODY ?PATTERN BODY ...?`
-    - `source FILENAME`
     - extra list commands
-        - `lappend VARNAME VALUE`
         - `linsert LIST INDEX ELEMENT`
-        - `lrange LIST FIRST LAST`
         - `lreverse LIST`
         - `lsort LIST`
     - `unknown`
     - `format`, `scan`?
 - Filesystem module (separate c file since it would need porting per arch.). No allowance for changing dir:
     - `glob ?DIRNAME? PATTERN`
-    - some basic, self-contained file I/O with filename as parameter -> no pointers, references or dangling file handles (but very slow)
-        - `file read FILENAME OFFSET SIZE`
-        - `file append FILENAME DATA`
-        - `file write FILENAME OFFSET DATA`
-    - normal `file` subcommands
-        - `file copy ?-force? SOURCE TARGET`
-        - `file move ?-force? SOURCE TARGET`
-        - `file rm FILENAME`
-        - `file size FILENAME`
-        - `file isfile FILENAME`
-        - `file mtime FILENAME`
-        - `file mkdir DIRNAME`
+    - `source FILENAME`
+    - `file`
+        - `copy ?-force? SOURCE TARGET`
+        - `move ?-force? SOURCE TARGET`
+        - `rm FILENAME`
+        - `size FILENAME`
+        - `isfile FILENAME`
+        - `mtime FILENAME`
+        - `mkdir DIRNAME`
+        - plus some basic, self-contained file I/O with filename as parameter -> no pointers, references or dangling file handles (but very slow)
+            - `read FILENAME OFFSET SIZE`
+            - `append FILENAME DATA`
+            - `write FILENAME OFFSET DATA`
 - Pack module, same functionality as the procedures of the same name in JimTCL, just perhaps using subcommands instead of -option:
     - `pack`
     - `unpack`
