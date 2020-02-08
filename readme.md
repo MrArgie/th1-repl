@@ -2,17 +2,82 @@
 
 Mostly based on [TH1](https://www.fossil-scm.org/index.html/doc/trunk/www/th1.md) (from Fossil SCM), using [linenoise](https://github.com/antirez/linenoise) for REPL line editing and with some extra procedures added to make it more useful. Aim is to create a minimal and slow TCL interpreter that is a good fit for RTOS embedded work. The use case I am aiming for requires something like JimTCL but where one can eschew the complexity (and speed) of native types for the simplicity (and small binary size) of pure strings. I need a replacement for a handcrafted CLI that could benefit from a bit of scripting and that can cope with binary hex strings without bringing unicode to the party.
 
+## Existing functionality
+
+Procedures:
+- `array`
+    - `array exists VARNAME`
+    - `array names VARNAME`
+- `catch SCRIPT ?VARNAME?`
+- `expr EXPR`
+- `for INIT CONDITION INCR SCRIPT`
+- `foreach VARNAME LIST BODY`
+- `if EXPR1 BODY1 ?elseif EXPR2 DOBY2? ? ?else? BODYN?`
+- `info`
+    - `commands`
+    - `args`
+    - `exists VARNAME`
+- `lindex LIST INDEX`
+- `list ?ARG1 ?ARG2? ...?`
+- `llength LIST`
+- `lsearch LIST STRING`
+- `lmap VARNAME LIST BODY`
+- `proc NAME ARGLIST CODE`
+- `rename OLDCMD NEWCMD`
+- `set VARNAME ?VALUE?`
+- `string`
+    - `string compare STR1 STR2`
+    - `string first NEEDLE HAYSTACK ?STARTINDEX?`
+    - `string index STRING INDEX`
+    - `string is CLASS STRING`
+    - `string last NEEDLE HAYSTACK ?STARTINDEX?`
+    - `string length STRING`
+    - `string range STRING FIRST LAST`
+    - `string repeat STRING COUNT`
+    - `string trim STRING`
+    - `string trimleft STRING`
+    - `string trimright STRING`
+- `unset VARNAME`
+- `uplevel ?LEVEL? SCRIPT`
+- `upvar ?FRAME? OTHERVAR MYVAR ?OTHERVAR MYVAR ...?`
+- `puts STRING ?...?`
+- `breakpoint`
+- `return ?-code CODE? ?VALUE?`
+- `break ?VALUE...?`
+- `continue ?VALUE...?`
+- `error ?VALUE...?`
+
+## Roadmap
+
 Some things I'd like to add as time goes by:
-- Procedures (the options for these will probably be a subset of those defined for JimTCL):
-  - `foreach` - DONE
-  - `switch`
-  - `source`
-  - `puts` - DONE
-  - extra list commands: `lmap`, `lappend`, `lassign`, `linsert`, `lsort`, `lrange`, `lreplace`, `lreverse` and `lsort`. `lmap` - DONE
-  - `pack`, `unpack`: same functionality as the procedures of the same name in JimTCL
-  - some basic, self-contained, file I/O: `read` and `write` with filename as parameter -> no pointers, references or dangling file handles (but very slow)
-  - `unknown`
-  - `format`, `scan`?
+- New procedures (with generally minimal choice when it comes to options):
+    - `switch STRING PATTERN BODY ?PATTERN BODY ...?`
+    - `source FILENAME`
+    - extra list commands
+        - `lappend VARNAME VALUE`
+        - `linsert LIST INDEX ELEMENT`
+        - `lrange LIST FIRST LAST`
+        - `lreverse LIST`
+        - `lsort LIST`
+    - `unknown`
+    - `format`, `scan`?
+- Filesystem module (separate c file since it would need porting per arch.). No allowance for changing dir:
+    - `glob ?DIRNAME? PATTERN`
+    - some basic, self-contained file I/O with filename as parameter -> no pointers, references or dangling file handles (but very slow)
+        - `file read FILENAME OFFSET SIZE`
+        - `file append FILENAME DATA`
+        - `file write FILENAME OFFSET DATA`
+    - normal `file` subcommands
+        - `file copy ?-force? SOURCE TARGET`
+        - `file move ?-force? SOURCE TARGET`
+        - `file rm FILENAME`
+        - `file size FILENAME`
+        - `file isfile FILENAME`
+        - `file mtime FILENAME`
+        - `file mkdir DIRNAME`
+- Pack module, same functionality as the procedures of the same name in JimTCL, just perhaps using subcommands instead of -option:
+    - `pack`
+    - `unpack`
 - Being able to inspect the interpreter state from another context
 - Being able to abort/cancel a script from another context
 
