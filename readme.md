@@ -23,6 +23,7 @@ Procedures:
 - `llength LIST`
 - `lsearch LIST STRING`
 - `lrange LIST FIRST LAST`
+- `lreverse LIST`
 - `lmap VARNAME LIST BODY`
 - `proc NAME ARGLIST CODE`
 - `rename OLDCMD NEWCMD`
@@ -56,10 +57,12 @@ Some things I'd like to add as time goes by:
     - `switch STRING PATTERN BODY ?PATTERN BODY ...?`
     - extra list commands
         - `linsert LIST INDEX ELEMENT`
-        - `lreverse LIST`
         - `lsort LIST`
     - `unknown`
     - `format`, `scan`?
+    - Pack functionality, same as the procedures of the same name in JimTCL, just perhaps using subcommands instead of -option:
+        - `pack`
+        - `unpack`
 - Filesystem module (separate c file since it would need porting per arch.). No allowance for changing dir:
     - `glob ?DIRNAME? PATTERN`
     - `source FILENAME`
@@ -75,9 +78,6 @@ Some things I'd like to add as time goes by:
             - `read FILENAME OFFSET SIZE`
             - `append FILENAME DATA`
             - `write FILENAME OFFSET DATA`
-- Pack module, same functionality as the procedures of the same name in JimTCL, just perhaps using subcommands instead of -option:
-    - `pack`
-    - `unpack`
 - Being able to inspect the interpreter state from another context
 - Being able to abort/cancel a script from another context
 

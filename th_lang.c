@@ -410,10 +410,46 @@ static int lrange_command(Th_Interp *interp, void *ctx, int argc, const char **a
       Th_SetResult(interp, "Index out of bounds", -1);
       rc = TH_ERROR;
     }
-    
+
+    Th_Free(interp, azElem);    
   }
 
-  Th_Free(interp, azElem);
+  return rc;
+}
+
+/*
+** TH Syntax:
+**
+**   lreverse list
+*/
+static int lreverse_command(Th_Interp *interp, void *ctx, int argc, const char **argv, int *argl)
+{
+  if( argc!=2 )
+  {
+    return Th_WrongNumArgs(interp, "lreverse list");
+  }
+
+  char **azElem;
+  int *anElem;
+  int nCount;
+
+  int rc = Th_SplitList(interp, argv[1], argl[1], &azElem, &anElem, &nCount);
+
+  if(rc == TH_OK)
+  {
+    char *zList = 0;
+    int nList = 0;
+
+    for(int i = nCount-1; i >= 0; i--)
+    {
+      Th_ListAppend(interp, &zList, &nList, azElem[i], anElem[i]);
+    }
+
+    Th_SetResult(interp, zList, nList);
+    Th_Free(interp, zList);
+  
+    Th_Free(interp, azElem);  
+  }
 
   return rc;
 }
@@ -1533,6 +1569,7 @@ int th_register_language(Th_Interp *interp){
     {"llength",  llength_command, 0},
     {"lsearch",  lsearch_command, 0},
     {"lappend",  lappend_command, 0},
+    {"lreverse", lreverse_command,0},
     {"lrange",   lrange_command,  0},
     {"lmap",     lmap_command,    0},
     {"proc",     proc_command,    0},
