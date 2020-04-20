@@ -35,6 +35,8 @@ else.*/
 ** exact clone.
 */
 
+#pragma once
+
 /*
 ** Before creating an interpreter, the application must allocate and
 ** populate an instance of the following structure. It must remain valid
