@@ -60,6 +60,9 @@ Some things I'd like to add as time goes by:
         - `lsort LIST`
     - `unknown`
     - `format`, `scan`?
+    - extra array commands
+        - `array get VARNAME`
+        - `array set VARNAME INDEX VALUE ?INDEX VALUE ...?`
     - Pack functionality, same as the procedures of the same name in JimTCL, just perhaps using subcommands instead of -option:
         - `pack`
         - `unpack`
@@ -80,6 +83,7 @@ Some things I'd like to add as time goes by:
             - `write FILENAME OFFSET DATA`
 - Being able to inspect the interpreter state from another context
 - Being able to abort/cancel a script from another context
+- Runtime subcommands and/or more flexible implementation of subcommands
 
 WIP
 
