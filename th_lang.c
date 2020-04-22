@@ -1314,6 +1314,53 @@ static int array_names_command(
 /*
 ** TH Syntax:
 **
+**   array set varname ?name value ...?
+*/
+static int array_set_command(
+  Th_Interp *interp,
+  void *ctx,
+  int argc,
+  const char **argv,
+  int *argl
+){
+  if( argc<3 || argc%2!=1 ){
+    return Th_WrongNumArgs(interp, "array set varname ?name value ...?");
+  }
+
+  if(argc > 3)
+  {
+    for(int i = 3; i < argc;)
+    {
+      char* name = NULL;
+      int name_size = 0;
+
+      Th_StringAppend(interp, &name, &name_size, argv[2], argl[2]);
+      Th_StringAppend(interp, &name, &name_size, "(", -1);
+      Th_StringAppend(interp, &name, &name_size, argv[i], argl[i]);
+      Th_StringAppend(interp, &name, &name_size, ")", -1);
+
+      int result = Th_SetVar(interp, name, name_size, argv[i+1], argl[i+1]);
+
+      Th_Free(interp, name);
+      i += 2;
+
+      if(result != TH_OK)
+      {
+        return result;
+      }
+    }
+
+    Th_SetResult(interp, 0, 0);
+  }
+  
+
+
+  return TH_OK;
+}
+
+/*
+** TH Syntax:
+**
 **   unset VARNAME
 */
 static int unset_command(
@@ -1439,6 +1486,7 @@ static int array_command(
   static const Th_SubCommand aSub[] = {
     { "exists", array_exists_command },
     { "names",  array_names_command },
+    { "set",    array_set_command },
     { 0, 0 }
   };
   return Th_CallSubCommand(interp, ctx, argc, argv, argl, aSub);
