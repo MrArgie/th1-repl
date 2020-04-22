@@ -1314,7 +1314,7 @@ static int array_names_command(
 /*
 ** TH Syntax:
 **
-**   array set varname ?name value ...?
+**   array set varname dictionary
 */
 static int array_set_command(
   Th_Interp *interp,
@@ -1323,38 +1323,52 @@ static int array_set_command(
   const char **argv,
   int *argl
 ){
-  if( argc<3 || argc%2!=1 ){
-    return Th_WrongNumArgs(interp, "array set varname ?name value ...?");
+  if( argc!=4 ){
+    return Th_WrongNumArgs(interp, "array set varname dictionary");
   }
 
-  if(argc > 3)
+  int nElem;
+  int *anElem;
+  char **azElem;
+
+  int result = Th_SplitList(interp, argv[3], argl[3], &azElem, &anElem, &nElem);
+
+  if(result != TH_OK)
   {
-    for(int i = 3; i < argc;)
+    return result;
+  }
+
+  if(nElem%2==1)
+  {
+    Th_Free(interp, azElem);
+    Th_SetResult(interp, "Dictionary should have an even number of elements", -1);
+    return TH_ERROR;
+  }
+
+  for(int i = 0; i < nElem-1;)
     {
       char* name = NULL;
       int name_size = 0;
 
       Th_StringAppend(interp, &name, &name_size, argv[2], argl[2]);
       Th_StringAppend(interp, &name, &name_size, "(", -1);
-      Th_StringAppend(interp, &name, &name_size, argv[i], argl[i]);
+    Th_StringAppend(interp, &name, &name_size, azElem[i], anElem[i]);
       Th_StringAppend(interp, &name, &name_size, ")", -1);
 
-      int result = Th_SetVar(interp, name, name_size, argv[i+1], argl[i+1]);
+    int result = Th_SetVar(interp, name, name_size, azElem[i+1], anElem[i+1]);
 
       Th_Free(interp, name);
       i += 2;
 
       if(result != TH_OK)
       {
+      Th_Free(interp, azElem);
         return result;
       }
     }
 
+  Th_Free(interp, azElem);
     Th_SetResult(interp, 0, 0);
-  }
-  
-
-
   return TH_OK;
 }
 
