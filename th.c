@@ -1739,15 +1739,18 @@ int Th_ListAppend(
     thBufferWrite(interp, &output, " ", 1);
   }
 
+  int openBrace = 0;
+
   for(i=0; i<nElem; i++){
     char c = zElem[i];
     if( th_isspecial(c) ) hasSpecialChar = 1;
     if( c=='\\' ) hasEscapeChar = 1;
     if( c=='{' ) nBrace++;
     if( c=='}' ) nBrace--;
+    if(openBrace==0 && nBrace) openBrace = nBrace>0?1:-1;
   }
 
-  if( nElem==0 || (!hasEscapeChar && hasSpecialChar && nBrace==0) ){
+  if( nElem==0 || (!hasEscapeChar && hasSpecialChar && nBrace==0 && openBrace==1) ){
     thBufferWrite(interp, &output, "{", 1);
     thBufferWrite(interp, &output, zElem, nElem);
     thBufferWrite(interp, &output, "}", 1);
